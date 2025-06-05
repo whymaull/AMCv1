@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Adit Motor Custom</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .active-nav {
+      background-color: #fee2e2;
+      color: #dc2626;
+      font-weight: 600;
+      border-left: 4px solid #dc2626;
+      padding-left: calc(1rem - 4px);
+    }
+    .nav-link:hover {
+      background-color: #fef2f2;
+      color: #dc2626;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed z-30 inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out w-64 bg-white border-r border-gray-200 shadow-lg flex flex-col">
+    <div class="px-6 py-6 border-b border-gray-200 flex justify-between items-center">
+      <h1 class="text-2xl font-extrabold text-red-600 flex items-center gap-2">
+        <i class="fas fa-motorcycle text-red-500"></i>
+        <span>AMC Panel</span>
+      </h1>
+      <button class="md:hidden text-gray-700 text-xl" onclick="toggleSidebar()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <nav class="p-4 space-y-2 flex-1">
+      <a href="index.html" class="block px-4 py-3 rounded-lg nav-link active-nav"><i class="fas fa-tachometer-alt mr-3 w-5"></i>Dashboard</a>
+      <a href="diagnosis.html" class="block px-4 py-3 rounded-lg nav-link"><i class="fas fa-stethoscope mr-3 w-5"></i>Diagnosis</a>
+      <!-- <a href="knowledge.html" class="block px-4 py-3 rounded-lg nav-link"><i class="fas fa-database mr-3 w-5"></i>Knowledge</a> -->
+      <a href="riwayat.html" class="block px-4 py-3 rounded-lg nav-link"><i class="fas fa-history mr-3 w-5"></i>Riwayat</a>
+      <a href="laporan.html" class="block px-4 py-3 rounded-lg nav-link"><i class="fas fa-chart-bar mr-3 w-5"></i>Laporan</a>
+    </nav>
+    <div class="p-4 text-sm border-t border-gray-200 flex items-center justify-between">
+      <span id="namaMekanik" class="text-gray-600 font-medium">Mekanik</span>
+      <button onclick="logout()" class="text-red-600 hover:underline text-sm">
+        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+      </button>
+    </div>
+    <div class="p-4 text-sm text-gray-500 border-t border-gray-200 hidden md:block">
+        <p>&copy; 2025 Adit Motor Custom</p>
+    </div>
+  </aside>
+
+  <!-- Main wrapper -->
+  <div class="flex-1 flex flex-col w-full md:ml-64">
+
+    <!-- Topbar mobile -->
+    <header class="bg-white shadow px-4 py-4 md:hidden flex items-center gap-3">
+      <button class="text-gray-700 text-xl" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <span class="text-xl font-bold text-red-600">AMC Panel</span>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1 p-6 overflow-y-auto">
+      <header class="mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+          <i class="fas fa-tachometer-alt text-red-500"></i>
+          <span>Dashboard</span>
+        </h2>
+        <h2 class="text-lg font-semibold text-gray-800">Selamat datang, <span id="mekanikNama" class="text-red-600">-</span></h2>
+      </header>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-2">Total Diagnosis</p>
+          <h3 id="totalDiagnosis" class="text-4xl font-bold text-indigo-600">0</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-2">Total Riwayat Diagnosa</p>
+          <h3 id="totalRiwayat" class="text-4xl font-bold text-green-600">0</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-2">Jumlah Gejala</p>
+          <h3 id="totalGejala" class="text-4xl font-bold text-yellow-600">0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Riwayat Diagnosa Terbaru</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm table-auto">
+            <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold tracking-wider">
+              <tr>
+                <th class="px-4 py-3 rounded-tl-lg">Tanggal</th>
+                <th class="px-4 py-3">Gejala</th>
+                <th class="px-4 py-3 rounded-tr-lg">Diagnosis</th>
+              </tr>
+            </thead>
+            <tbody id="riwayatList" class="text-gray-700 divide-y divide-gray-100">
+              <tr><td colspan="3" class="text-center text-gray-400 py-6">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("-translate-x-full");
+  }
+
+  function tampilkanNamaMekanik() {
+    const mekanik = JSON.parse(localStorage.getItem("mekanik"));
+    if (mekanik) {
+      document.getElementById("namaMekanik").textContent = mekanik.nama;
+      document.getElementById("mekanikNama").textContent = mekanik.nama;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("mekanik");
+    window.location.href = "login.html";
+  }
+
+  async function fetchData(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  }
+
+  async function loadDashboard() {
+    try {
+      const [diagnosis, riwayat, gejala] = await Promise.all([
+        fetchData('http://localhost:3000/api/diagnosis'),
+        fetchData('http://localhost:3000/api/riwayat'),
+        fetchData('http://localhost:3000/api/gejala')
+      ]);
+
+      document.getElementById("totalDiagnosis").textContent = diagnosis.length;
+      document.getElementById("totalRiwayat").textContent = riwayat.length;
+      document.getElementById("totalGejala").textContent = gejala.length;
+
+      const tbody = document.getElementById("riwayatList");
+      tbody.innerHTML = '';
+
+      if (riwayat.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-gray-500 py-6">Tidak ada riwayat diagnosa.</td></tr>';
+        return;
+      }
+
+      // Map kode gejala ke deskripsi
+      const gejalaMap = new Map(gejala.map(g => [g.id_gejala, g.deskripsi]));
+
+      riwayat.slice(0, 5).forEach(item => {
+        const tr = document.createElement("tr");
+
+        const gejalaKodes = item.gejala?.split(',') || [];
+        const namaGejala = gejalaKodes.map(kode => gejalaMap.get(kode.trim()) || kode.trim()).join(', ');
+
+        tr.innerHTML = `
+          <td class="px-4 py-3 whitespace-nowrap">${new Date(item.waktu).toLocaleString('id-ID')}</td>
+          <td class="px-4 py-3">${namaGejala}</td>
+          <td class="px-4 py-3 font-semibold text-red-600">${item.diagnosis || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("totalDiagnosis").textContent = 'Err';
+      document.getElementById("totalRiwayat").textContent = 'Err';
+      document.getElementById("totalGejala").textContent = 'Err';
+      document.getElementById("riwayatList").innerHTML = `
+        <tr><td colspan="3" class="text-center text-red-600 py-6">
+        <i class="fas fa-exclamation-triangle text-lg"></i> Gagal memuat data
+        </td></tr>`;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    tampilkanNamaMekanik();
+    loadDashboard();
+  });
+</script>
+</body>
+</html>

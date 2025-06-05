@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Diagnosis - AMC Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .active-nav {
+        background-color: #fee2e2;
+        color: #dc2626;
+        font-weight: 600;
+        border-left: 4px solid #dc2626;
+        padding-left: calc(1rem - 4px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r shadow-lg fixed inset-y-0 left-0 hidden md:flex flex-col z-10">
+        <div class="p-6 border-b">
+            <h1 class="text-2xl font-extrabold text-red-600 flex items-center gap-2">
+                <i class="fas fa-motorcycle text-red-500"></i> AMC Panel
+            </h1>
+        </div>
+        <nav class="p-4 space-y-2 flex-1">
+            <a href="index.html" class="block px-4 py-3 rounded-lg nav-link">
+                <i class="fas fa-tachometer-alt mr-3 w-5"></i>Dashboard
+            </a>
+            <a href="diagnosis.html" class="block px-4 py-3 rounded-lg nav-link active-nav">
+                <i class="fas fa-stethoscope mr-3 w-5"></i>Diagnosis
+            </a>
+            <!-- <a href="knowledge.html" class="block px-4 py-3 rounded-lg nav-link"><i class="fas fa-database mr-3 w-5"></i>Knowledge </a> -->
+            <a href="riwayat.html" class="block px-4 py-3 rounded-lg nav-link">
+                <i class="fas fa-history mr-3 w-5"></i>Riwayat
+            </a>
+            <a href="laporan.html" class="block px-4 py-3 rounded-lg nav-link">
+                <i class="fas fa-chart-bar mr-3 w-5"></i>Laporan
+            </a>
+        </nav>
+        <div class="p-4 border-t flex justify-between items-center text-sm">
+            <span id="namaMekanik" class="text-gray-600 font-medium">Mekanik</span>
+            <button onclick="logout()" class="text-red-600 hover:underline"><i class="fas fa-sign-out-alt mr-1"></i>Logout</button>
+        </div>
+        <div class="p-4 text-sm text-gray-500 border-t border-gray-200 hidden md:block">
+            <p>&copy; 2025 Adit Motor Custom</p>
+        </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="flex-1 md:ml-64 p-6 overflow-visible">
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-2 flex items-center gap-3">
+            <i class="fas fa-stethoscope text-red-500"></i>
+            <span>Diagnosis Kerusakan</span>
+        </h2>
+
+        <!-- Pertanyaan Gejala -->
+        <div id="form-pertanyaan" class="bg-white shadow rounded-xl p-6 border hidden">
+            <p class="mb-4 font-semibold">Apakah gejala berikut dialami oleh pelanggan?</p>
+            <h3 id="pertanyaanGejala" class="text-lg font-bold text-red-600 mb-6">Gejala -</h3>
+            <div class="flex gap-4">
+                <button onclick="jawabGejala(true)" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded-md">
+                    Ya
+                </button>
+                <button onclick="jawabGejala(false)" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded-md">
+                    Tidak
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Hasil Diagnosis -->
+        <div id="hasil-diagnosis" class="bg-white shadow rounded-xl p-6 border hidden">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Hasil Diagnosis</h3>
+            <p><strong>Nama Pelanggan:</strong> <span id="hasilNama"></span></p>
+            <p><strong>Jenis Motor:</strong> <span id="hasilMotor"></span></p>
+            <p><strong>Kerusakan:</strong> <span id="hasilKerusakan" class="text-red-600 font-bold"></span></p>
+            <p class="text-sm mt-4 text-gray-500">Diagnosis disimpan otomatis ke sistem.</p>
+            <a href="diagnosis.html" class="mt-4 inline-block text-blue-600 hover:underline">Mulai Diagnosis baru</a>
+        </div>
+
+        <!-- Form Identitas -->
+        <div id="form-identitas" class="bg-white shadow rounded-xl p-6 border mb-6 relative z-10 overflow-visible">
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Nama Pelanggan</label>
+                <input type="text" id="namaPelanggan" class="w-full px-4 py-2 border rounded-md" placeholder="Masukkan nama pelanggan" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Jenis Motor</label>
+                <input type="text" id="jenisMotor" class="w-full px-4 py-2 border rounded-md" placeholder="Contoh: Honda Vario 125" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Plat Nomor</label>
+                <input type="text" id="platNomor" class="w-full px-4 py-2 border rounded-md" placeholder="Contoh: B 1234 XYZ" required />
+            </div>
+
+            <div class="mb-6 relative z-50">
+                <label class="block text-sm font-medium mb-1">Gejala Awal</label>
+                <div class="relative">
+                    <button id="dropdownBtn" type="button" class="w-full px-4 py-2 border rounded-md bg-white text-left"
+                        onclick="toggleDropdown()"> <span id="selectedGejalaText">-- Pilih Gejala Awal --</span>
+                        <i class="fas fa-chevron-down float-right mt-1"></i>
+                    </button>
+                    <ul id="dropdownList"
+                        class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 max-h-60 overflow-auto hidden z-50">
+                    
+                    </ul>
+                </div>
+            </div>
+
+
+            <button onclick="mulaiDiagnosis()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-semibold">
+                Mulai Diagnosis
+            </button>
+        </div>
+
+        <!-- Spacer tambahan agar dropdown tidak terdesak -->
+        <div class="h-64"></div>
+    </main>
+</div>
+
+<script>
+    let gejalaList = [];
+    let currentIndex = 0;
+    let gejalaTerpilih = [];
+    let diagnosisResult = '';
+    let pelanggan = { nama: '', motor: '', plat: '' };
+
+    function tampilkanNamaMekanik() {
+        const mekanik = JSON.parse(localStorage.getItem("mekanik"));
+        if (mekanik) document.getElementById("namaMekanik").textContent = mekanik.nama;
+    }
+
+    function logout() {
+        localStorage.removeItem("mekanik");
+        window.location.href = "login.html";
+    }
+
+    let selectedGejalaAwalId = null;
+
+    function toggleDropdown() {
+        document.getElementById("dropdownList").classList.toggle("hidden");
+    }
+
+    function pilihGejalaAwal(id, deskripsi) {
+        selectedGejalaAwalId = id;
+        document.getElementById("selectedGejalaText").textContent = deskripsi;
+        document.getElementById("dropdownList").classList.add("hidden");
+    }
+
+    // Event klik luar dropdown
+    document.addEventListener("click", function (e) {
+        const btn = document.getElementById("dropdownBtn");
+        const list = document.getElementById("dropdownList");
+        if (!btn.contains(e.target)) list.classList.add("hidden");
+    });
+
+    async function muatGejalaAwal() {
+        try {
+            const res = await fetch("http://localhost:3000/api/gejala");
+            const data = await res.json();
+
+            const list = document.getElementById("dropdownList");
+            list.innerHTML = "";
+
+            data.forEach(g => {
+            const li = document.createElement("li");
+            li.className = "px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm";
+            li.textContent = g.deskripsi || g.DESKRIPSI;
+            li.onclick = () => pilihGejalaAwal(g.id || g.id_gejala, g.deskripsi || g.DESKRIPSI);
+            list.appendChild(li);
+            });
+        } catch (err) {
+            alert("Gagal memuat data gejala awal: " + err.message);
+        }
+    }
+
+
+    async function mulaiDiagnosis() {
+        pelanggan.nama = document.getElementById("namaPelanggan").value;
+        pelanggan.motor = document.getElementById("jenisMotor").value;
+        pelanggan.plat = document.getElementById("platNomor").value;
+
+        if (!pelanggan.nama || !pelanggan.motor || !pelanggan.plat || !selectedGejalaAwalId) {
+            alert("Mohon lengkapi semua data dan pilih gejala awal.");
+            return;
+        }
+
+        try {
+            gejalaTerpilih = [selectedGejalaAwalId];
+
+            const res = await fetch(`http://localhost:3000/api/gejala/pendukung/${selectedGejalaAwalId}`);
+            gejalaList = await res.json();
+            console.log("Data gejala pendukung:", gejalaList)
+            if (gejalaList.length === 0) {
+            alert("Tidak ada gejala pendukung.");
+            return;
+            }
+
+            document.getElementById("form-identitas").classList.add("hidden");
+            document.getElementById("form-pertanyaan").classList.remove("hidden");
+            currentIndex = 0;
+            tampilkanPertanyaan();
+        } catch (err) {
+            alert("Gagal memulai diagnosis: " + err.message);
+        }
+    }
+
+    function tampilkanPertanyaan() {
+        if (!gejalaList || currentIndex >= gejalaList.length) {
+            return selesaikanDiagnosis();
+        }
+
+        const gejala = gejalaList[currentIndex];
+        if (!gejala || !gejala.nama) {
+            alert("Data gejala tidak valid.");
+            return;
+        }
+
+        document.getElementById("pertanyaanGejala").textContent = gejala.nama;
+    }
+
+
+    function jawabGejala(ya) {
+        if (ya) gejalaTerpilih.push(gejalaList[currentIndex].id);
+        currentIndex++;
+        tampilkanPertanyaan();
+    }
+
+    async function selesaikanDiagnosis() {
+        try {
+        const response = await fetch("http://localhost:3000/api/rulebase/diagnosis", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ gejala: gejalaTerpilih }),
+        });
+        const data = await response.json();
+        diagnosisResult = data.diagnosis;
+
+        await simpanRiwayat();
+        tampilkanHasil();
+
+        } catch (err) {
+        alert("Gagal melakukan diagnosis: " + err.message);
+        }
+    }
+
+    async function simpanRiwayat() {
+        const mekanik = JSON.parse(localStorage.getItem("mekanik"));
+        const body = {
+            nama: pelanggan.nama,
+            motor: pelanggan.motor,
+            plat: pelanggan.plat,
+            mekanik_id: mekanik?.id || null,
+            gejala: gejalaTerpilih,
+            diagnosis: diagnosisResult,
+            waktu: new Date().toISOString()
+        };
+
+        console.log("Body yang dikirim ke riwayat:", body);
+
+        await fetch("http://localhost:3000/api/riwayat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+    }
+
+
+    function tampilkanHasil() {
+        document.getElementById("form-pertanyaan").classList.add("hidden");
+        document.getElementById("hasil-diagnosis").classList.remove("hidden");
+        document.getElementById("hasilNama").textContent = pelanggan.nama;
+        document.getElementById("hasilMotor").textContent = pelanggan.motor;
+        document.getElementById("hasilKerusakan").textContent = diagnosisResult;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        tampilkanNamaMekanik();
+        muatGejalaAwal();
+    });
+</script>
+</body>
+</html>
