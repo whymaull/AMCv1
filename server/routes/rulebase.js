@@ -4,7 +4,6 @@ const RulebaseModel = require("../models/rulebasemodel");
 
 router.post("/diagnosis", async (req, res) => {
   const { gejala } = req.body;
-
   if (!gejala || gejala.length === 0) {
     return res.status(400).json({ message: "Data gejala kosong" });
   }

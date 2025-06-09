@@ -13,6 +13,6 @@ module.exports = {
       LIMIT 1
     `, gejalaList);
 
-    return rows.length > 0 ? rows[0].nama_kerusakan : "Tidak ditemukan diagnosis yang cocok.";
+    return rows.length > 0 ? rows[0].nama_kerusakan : "Tidak ditemukan";
   }
 };

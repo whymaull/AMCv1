@@ -261,7 +261,7 @@
             mekanik_id: mekanik?.id || null,
             gejala: gejalaTerpilih,
             diagnosis: diagnosisResult,
-            waktu: new Date().toISOString()
+            waktu: new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).replace(' ', 'T') + '.000Z'
         };
 
         console.log("Body yang dikirim ke riwayat:", body);

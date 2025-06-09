@@ -6,6 +6,7 @@
   <title>Laporan Diagnosa - AMC Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -98,6 +99,45 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <!-- Card 1 -->
+          <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-chart-bar text-blue-500 mr-2"></i>Statistik Diagnosa</h3>
+            <p class="text-gray-600 text-sm mb-4">Visualisasi jumlah diagnosa dan jenis kerusakan paling sering.</p>
+            <button onclick="exportStatistikPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              <i class="fas fa-file-pdf mr-2"></i>Print PDF
+            </button>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-history text-yellow-500 mr-2"></i>Riwayat Diagnosa</h3>
+            <p class="text-gray-600 text-sm mb-4">Daftar semua diagnosa yang sudah dilakukan oleh mekanik.</p>
+            <button onclick="exportRiwayatPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              <i class="fas fa-file-pdf mr-2"></i>Print PDF
+            </button>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-exclamation-circle text-purple-500 mr-2"></i>Frekuensi Gejala</h3>
+            <p class="text-gray-600 text-sm mb-4">Distribusi jumlah gejala yang paling sering dipilih pengguna.</p>
+            <button onclick="exportGejalaPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              <i class="fas fa-file-pdf mr-2"></i>Print PDF
+            </button>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-user-cog text-green-500 mr-2"></i>Performa Mekanik</h3>
+            <p class="text-gray-600 text-sm mb-4">Rekap aktivitas mekanik berdasarkan jumlah diagnosis.</p>
+            <button onclick="exportMekanikPDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              <i class="fas fa-file-pdf mr-2"></i>Print PDF
+            </button>
+          </div>
+        </div>
+
+
         <!-- Bar Chart -->
         <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
           <div class="relative w-full h-[300px] sm:h-[400px] md:h-[450px]">
@@ -107,6 +147,165 @@
       </main>
     </div>
   </div>
+
+  <!-- Hidden containers for PDF export -->
+  <div id="laporan-statistik" class="hidden p-6">
+    <h2 class="text-lg font-bold mb-2">Laporan Statistik Diagnosa</h2>
+    <ul id="dataStatistik" class="list-disc pl-5 text-sm text-gray-700"></ul>
+  </div>
+
+  <div id="laporan-riwayat" class="hidden p-6">
+    <h2 class="text-lg font-bold mb-2">Laporan Riwayat Diagnosa</h2>
+    <ul id="dataRiwayat" class="list-disc pl-5 text-sm text-gray-700"></ul>
+  </div>
+
+  <div id="laporan-gejala" class="hidden p-6">
+    <h2 class="text-lg font-bold mb-2">Laporan Frekuensi Gejala</h2>
+    <ul id="dataGejala" class="list-disc pl-5 text-sm text-gray-700"></ul>
+  </div>
+
+  <div id="laporan-mekanik" class="hidden p-6">
+    <h2 class="text-lg font-bold mb-2">Laporan Performa Mekanik</h2>
+    <ul id="dataMekanik" class="list-disc pl-5 text-sm text-gray-700"></ul>
+  </div>
+
+  <div id="laporan-statistik-pdf" class="hidden p-10 text-sm text-gray-900 leading-relaxed">
+    <div class="flex items-center justify-between mb-4">
+      <img src="assets/logo.png" class="w-20 h-20 object-contain" />
+      <div class="text-center w-full -ml-20">
+        <h1 class="text-lg font-bold uppercase">BENGKEL ADIT MOTOR CUSTOM</h1>
+        <p class="text-xs">Jl. Bambu Kuning RT.002/02, Sepanjang Jaya, Kota Bekasi, Jawa Barat</p>
+      </div>
+    </div>
+    <hr class="my-2 border-gray-600">
+    <h2 class="text-base font-bold text-center my-4 uppercase">Laporan Statistik Diagnosa</h2>
+    <table class="w-full table-auto border-collapse border border-gray-700 text-sm">
+      <thead>
+        <tr class="bg-gray-200 text-left">
+          <th class="border border-gray-700 px-3 py-1 w-10 text-center">No</th>
+          <th class="border border-gray-700 px-3 py-1">Jenis Diagnosa</th>
+          <th class="border border-gray-700 px-3 py-1 w-32 text-center">Jumlah Kasus</th>
+        </tr>
+      </thead>
+      <tbody id="dataStatistikTabel"></tbody>
+    </table>
+    <div class="mt-10 flex justify-end">
+      <div class="text-right">
+        <p>Jakarta, <span id="tglCetakStatistik"></span></p>
+        <p class="mt-2">Mengetahui,</p>
+        <p class="font-semibold">Pimpinan Bengkel</p>
+        <div class="h-16 mt-2 mb-1">
+          <img src="assets/ttd_pimpinan.png" class="h-full mx-auto" />
+        </div>
+        <p class="font-semibold underline">Triwahyudi</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="laporan-riwayat-pdf" class="hidden p-10 text-sm text-gray-900 leading-relaxed">
+    <div class="flex items-center justify-between mb-4">
+      <img src="assets/logo.png" class="w-20 h-20 object-contain" />
+      <div class="text-center w-full -ml-20">
+        <h1 class="text-lg font-bold uppercase">BENGKEL ADIT MOTOR CUSTOM</h1>
+        <p class="text-xs">Jl. Bambu Kuning RT.002/02, Sepanjang Jaya, Kota Bekasi, Jawa Barat</p>
+      </div>
+    </div>
+    <hr class="my-2 border-gray-600">
+    <h2 class="text-base font-bold text-center my-4 uppercase">Laporan Riwayat Diagnosa</h2>
+    <table class="w-full table-auto border-collapse border border-gray-700 text-sm">
+      <thead>
+        <tr class="bg-gray-200 text-left">
+          <th class="border border-gray-700 px-3 py-1 text-center">No</th>
+          <th class="border border-gray-700 px-3 py-1">Nama Pelanggan</th>
+          <th class="border border-gray-700 px-3 py-1">Jenis Motor</th>
+          <th class="border border-gray-700 px-3 py-1">Diagnosis</th>
+          <th class="border border-gray-700 px-3 py-1">Mekanik</th>
+          <th class="border border-gray-700 px-3 py-1">Waktu</th>
+        </tr>
+      </thead>
+      <tbody id="dataRiwayatTabel"></tbody>
+    </table>
+    <div class="mt-10 flex justify-end">
+      <div class="text-right">
+        <p>Jakarta, <span id="tglCetakRiwayat"></span></p>
+        <p class="mt-2">Mengetahui,</p>
+        <p class="font-semibold">Pimpinan Bengkel</p>
+        <div class="h-16 mt-2 mb-1">
+          <img src="assets/ttd_pimpinan.png" class="h-full mx-auto" />
+        </div>
+        <p class="font-semibold underline">Triwahyudi</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="laporan-gejala-pdf" class="hidden p-10 text-sm text-gray-900 leading-relaxed">
+    <div class="flex items-center justify-between mb-4">
+      <img src="assets/logo.png" class="w-20 h-20 object-contain" />
+      <div class="text-center w-full -ml-20">
+        <h1 class="text-lg font-bold uppercase">BENGKEL ADIT MOTOR CUSTOM</h1>
+        <p class="text-xs">Jl. Bambu Kuning RT.002/02, Sepanjang Jaya, Kota Bekasi, Jawa Barat</p>
+      </div>
+    </div>
+    <hr class="my-2 border-gray-600">
+    <h2 class="text-base font-bold text-center my-4 uppercase">Laporan Frekuensi Gejala</h2>
+    <table class="w-full table-auto border-collapse border border-gray-700 text-sm">
+      <thead>
+        <tr class="bg-gray-200 text-left">
+          <th class="border border-gray-700 px-3 py-1 text-center">No</th>
+          <th class="border border-gray-700 px-3 py-1">Gejala</th>
+          <th class="border border-gray-700 px-3 py-1 text-center">Jumlah</th>
+        </tr>
+      </thead>
+      <tbody id="dataGejalaTabel"></tbody>
+    </table>
+    <div class="mt-10 flex justify-end">
+      <div class="text-right">
+        <p>Jakarta, <span id="tglCetakGejala"></span></p>
+        <p class="mt-2">Mengetahui,</p>
+        <p class="font-semibold">Pimpinan Bengkel</p>
+        <div class="h-16 mt-2 mb-1">
+          <img src="assets/ttd_pimpinan.png" class="h-full mx-auto" />
+        </div>
+        <p class="font-semibold underline">Triwahyudi</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="laporan-mekanik-pdf" class="hidden p-10 text-sm text-gray-900 leading-relaxed">
+    <div class="flex items-center justify-between mb-4">
+      <img src="assets/logo.png" class="w-20 h-20 object-contain" />
+      <div class="text-center w-full -ml-20">
+        <h1 class="text-lg font-bold uppercase">BENGKEL ADIT MOTOR CUSTOM</h1>
+        <p class="text-xs">Jl. Bambu Kuning RT.002/02, Sepanjang Jaya, Kota Bekasi, Jawa Barat</p>
+      </div>
+    </div>
+    <hr class="my-2 border-gray-600">
+    <h2 class="text-base font-bold text-center my-4 uppercase">Laporan Performa Mekanik</h2>
+    <table class="w-full table-auto border-collapse border border-gray-700 text-sm">
+      <thead>
+        <tr class="bg-gray-200 text-left">
+          <th class="border border-gray-700 px-3 py-1 text-center">No</th>
+          <th class="border border-gray-700 px-3 py-1">Nama Mekanik</th>
+          <th class="border border-gray-700 px-3 py-1 text-center">Jumlah Diagnosis</th>
+        </tr>
+      </thead>
+      <tbody id="dataMekanikTabel"></tbody>
+    </table>
+    <div class="mt-10 flex justify-end">
+      <div class="text-right">
+        <p>Jakarta, <span id="tglCetakMekanik"></span></p>
+        <p class="mt-2">Mengetahui,</p>
+        <p class="font-semibold">Pimpinan Bengkel</p>
+        <div class="h-16 mt-2 mb-1">
+          <img src="assets/ttd_pimpinan.png" class="h-full mx-auto" />
+        </div>
+        <p class="font-semibold underline">Triwahyudi</p>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     let chartInstance = null;
@@ -186,6 +385,113 @@
         alert("❌ Gagal memuat data laporan: " + err.message);
       }
     }
+
+    async function exportPDF(containerId, fileName) {
+      const element = document.getElementById(containerId);
+      element.classList.remove("hidden");
+
+      const opt = {
+        margin: 0.5,
+        filename: fileName,
+        image: { type: 'png', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+      element.classList.add("hidden");
+    }
+
+    async function exportStatistikPDF() {
+      const res = await fetch("/api/laporan");
+      const data = await res.json();
+      const tbody = document.querySelector("#dataStatistikTabel");
+      tbody.innerHTML = "";
+
+      data.forEach((item, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="border border-gray-700 px-3 py-1 text-center">${i + 1}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.diagnosis}</td>
+            <td class="border border-gray-700 px-3 py-1 text-center">${item.jumlah}</td>
+          </tr>`;
+      });
+
+      document.getElementById("tglCetakStatistik").textContent =
+        new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" });
+
+      exportPDF("laporan-statistik-pdf", "Laporan_Statistik_Diagnosa.pdf");
+    }
+
+
+    async function exportRiwayatPDF() {
+      const res = await fetch("/api/laporan/riwayat");
+      const data = await res.json();
+      const tbody = document.querySelector("#dataRiwayatTabel");
+      tbody.innerHTML = "";
+
+      data.forEach((item, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="border border-gray-700 px-3 py-1 text-center">${i + 1}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.nama_pelanggan}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.jenis_motor}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.diagnosis}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.nama_mekanik}</td>
+            <td class="border border-gray-700 px-3 py-1">${new Date(item.waktu).toLocaleString("id-ID")}</td>
+          </tr>`;
+      });
+
+      document.getElementById("tglCetakRiwayat").textContent =
+        new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" });
+
+      exportPDF("laporan-riwayat-pdf", "Laporan_Riwayat_Diagnosa.pdf");
+    }
+
+
+    async function exportGejalaPDF() {
+      const res = await fetch("/api/laporan/gejala");
+      const data = await res.json();
+      const tbody = document.querySelector("#dataGejalaTabel");
+      tbody.innerHTML = "";
+
+      data.forEach((item, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="border border-gray-700 px-3 py-1 text-center">${i + 1}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.deskripsi}</td>
+            <td class="border border-gray-700 px-3 py-1 text-center">${item.jumlah}</td>
+          </tr>`;
+      });
+
+      document.getElementById("tglCetakGejala").textContent =
+        new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" });
+
+      exportPDF("laporan-gejala-pdf", "Laporan_Frekuensi_Gejala.pdf");
+    }
+
+
+    async function exportMekanikPDF() {
+      const res = await fetch("/api/laporan/mekanik");
+      const data = await res.json();
+      const tbody = document.querySelector("#dataMekanikTabel");
+      tbody.innerHTML = "";
+
+      data.forEach((item, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="border border-gray-700 px-3 py-1 text-center">${i + 1}</td>
+            <td class="border border-gray-700 px-3 py-1">${item.nama}</td>
+            <td class="border border-gray-700 px-3 py-1 text-center">${item.jumlah}</td>
+          </tr>`;
+      });
+
+      document.getElementById("tglCetakMekanik").textContent =
+        new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" });
+
+      exportPDF("laporan-mekanik-pdf", "Laporan_Performa_Mekanik.pdf");
+    }
+
 
     async function loadMekanikOptions() {
       try {
