@@ -316,6 +316,11 @@
       sidebar.classList.toggle("-translate-x-full");
     }
 
+     function logout() {
+      localStorage.removeItem("mekanik");
+      window.location.href = "login.html";
+    }
+
     function tampilkanNamaMekanik() {
 			const mekanik = JSON.parse(localStorage.getItem("mekanik"));
 			console.log(localStorage.getItem("mekanik"))

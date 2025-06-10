@@ -10,7 +10,7 @@ const AuthModel = {
   findByEmail: async (email) => {
     const sql = `SELECT * FROM mekanik WHERE email = ? LIMIT 1`;
     const [rows] = await db.query(sql, [email]);
-    return rows[0]; 
+    return rows[0];
   }
 };
 

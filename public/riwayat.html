@@ -99,6 +99,11 @@
   </div>
 
   <script>
+    function tampilkanNamaMekanik() {
+        const mekanik = JSON.parse(localStorage.getItem("mekanik"));
+        if (mekanik) document.getElementById("namaMekanik").textContent = mekanik.nama;
+    }
+
     async function fetchData(url) {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -153,7 +158,10 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", loadRiwayat);
+    document.addEventListener("DOMContentLoaded", () => {
+        tampilkanNamaMekanik();
+        loadRiwayat();
+    });
   </script>
 </body>
 </html>

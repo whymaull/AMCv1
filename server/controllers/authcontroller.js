@@ -1,6 +1,8 @@
+const bcrypt = require("bcrypt");  // Tambahkan bcrypt untuk hashing password
 const AuthModel = require("../models/AuthModel");
 
 const AuthController = {
+  // Register
   register: async (req, res) => {
     const { nama, email, password } = req.body;
 
@@ -14,7 +16,10 @@ const AuthController = {
         return res.status(409).json({ message: "Email sudah terdaftar." });
       }
 
-      await AuthModel.register({ nama, email, password });
+      // Hash password sebelum disimpan ke database
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await AuthModel.register({ nama, email, password: hashedPassword });
       res.status(201).json({ message: "Registrasi berhasil." });
 
     } catch (err) {
@@ -22,6 +27,7 @@ const AuthController = {
     }
   },
 
+  // Login
   login: async (req, res) => {
     const { email, password } = req.body;
 
@@ -31,10 +37,14 @@ const AuthController = {
         return res.status(401).json({ message: "Email tidak ditemukan." });
       }
 
-      if (mekanik.password !== password) {
+      // Bandingkan password yang dimasukkan dengan hash password yang ada di database
+      const isPasswordValid = await bcrypt.compare(password, mekanik.password);
+
+      if (!isPasswordValid) {
         return res.status(401).json({ message: "Password salah." });
       }
 
+      // Jika login berhasil, simpan data user di session
       req.session.mekanik = {
         id: mekanik.id,
         nama: mekanik.nama,
@@ -51,6 +61,7 @@ const AuthController = {
     }
   },
 
+  // Menampilkan data user yang sedang login
   me: (req, res) => {
     if (!req.session.mekanik) {
       return res.status(401).json({ message: "Belum login." });
@@ -58,9 +69,14 @@ const AuthController = {
     res.json(req.session.mekanik);
   },
 
+  // Logout
   logout: (req, res) => {
-    req.session.destroy(() => {
-      res.json({ message: "Berhasil logout." });
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Gagal logout" });
+      }
+      // Setelah session dihancurkan, arahkan ke halaman login
+      res.redirect("/login.html"); // Arahkan ke login setelah logout
     });
   }
 };

@@ -118,6 +118,18 @@
     sidebar.classList.toggle("-translate-x-full");
   }
 
+  // Fungsi untuk cek session login di halaman dashboard
+  async function cekSession() {
+    const res = await fetch("/api/auth/me");
+    if (!res.ok) {
+      window.location.href = "/login.html"; // Jika belum login, alihkan ke login
+    }
+  }
+
+  // Panggil fungsi cekSession ketika halaman dashboard dimuat
+  cekSession();
+
+
   function tampilkanNamaMekanik() {
     const mekanik = JSON.parse(localStorage.getItem("mekanik"));
     if (mekanik) {
